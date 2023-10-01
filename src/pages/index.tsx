@@ -80,7 +80,7 @@ export default function Home() {
         const minaWallet = (window as any).mina as IAuroWallet | null;
         setWalletState((prev) => ({ ...prev, wallet: minaWallet }));
         const workerClient = new ZkProgWorkerClient();
-        await timeout(6 * 1000);
+        await timeout(8 * 1000);
         console.log(`Worker client initialized`);
         const verificationKey = await workerClient.compileZkProgram();
         setZkProgState((prev) => ({
