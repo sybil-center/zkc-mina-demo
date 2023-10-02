@@ -302,6 +302,11 @@ export default function Home() {
               What is ZK credentials ?
             </button>
           </a>
+          <a href={"https://github.com/Pave1Pal/zkc-passport-demo"} target="_blank" rel="noreferrer">
+            <button className={styles.card}>
+              Source code
+            </button>
+          </a>
         </main>
       </GradientBG>
 
