@@ -9,7 +9,13 @@
 
 ## How to start:
 
-1. Install dependencies `npm install`
-2. Run development server `npm run dev`
-3. Open  [http://localhost:3000]( http://localhost:3000) with your bowser
-4. Check it out
+Start on your machine:
+
+  1. Install dependencies `npm install`
+  2. Run development server `npm run dev`
+  3. Open  [http://localhost:3000]( http://localhost:3000) with your bowser
+  4. Check it out
+
+Or just open the [link](https://zkc-passport-demo-i2o6urgwh-pave1pals-projects.vercel.app/) with your browser
+
+
