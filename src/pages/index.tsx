@@ -1,4 +1,4 @@
-import "./reactCOIServiceWorker";
+import "../service/reactCOIServiceWorker";
 import { IAuroWallet, MinaProvider, PassportCred, Proved, zkcMina, ZkSybil } from "@sybil-center/zkc-o1js";
 import { JsonProof, PublicKey } from "o1js";
 import { useEffect, useState } from "react";
