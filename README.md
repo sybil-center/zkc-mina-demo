@@ -7,6 +7,8 @@
 3. Create ZK proof that you are human older than 18 y.o.
 4. Verify ZK proof
 
+or see  [video](https://www.youtube.com/watch?v=xL8-g76TSfI&ab_channel=PavelDeshevov)
+
 ## How to start:
 
   1. Install dependencies `npm install`

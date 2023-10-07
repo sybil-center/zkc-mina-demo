@@ -296,7 +296,11 @@ export default function Home() {
             {zkCredComponent()}
           </div>
           {zkProgComponent()}
-
+          <a href={"https://www.youtube.com/watch?v=xL8-g76TSfI&ab_channel=PavelDeshevov"}>
+            <button className={styles.card}>
+              What is going on ???
+            </button>
+          </a>
           <a href={"https://www.craft.me/s/fP61xnwdZ9GZmg"} target="_blank" rel="noreferrer">
             <button className={styles.card}>
               What is ZK credentials ?
