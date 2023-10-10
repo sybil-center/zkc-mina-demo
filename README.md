@@ -16,3 +16,11 @@ or see  [video](https://www.youtube.com/watch?v=xL8-g76TSfI&ab_channel=PavelDesh
   3. Open  [http://localhost:3000]( http://localhost:3000) with your bowser
   4. Check it out
 
+or just open [demo app link]( https://demo-mina.sybil.center)
+
+## Other resources
+
+- What is [`Zero-Knowledge Credentials`](https://github.com/sybil-center/ZKCIPs)?
+- [`JS library`](https://www.npmjs.com/package/@sybil-center/zkc-o1js) for ZKC with Mina Protocol
+- [`JS library`](https://www.npmjs.com/package/@sybil-center/zkc-core) for base ZKC logic 
+

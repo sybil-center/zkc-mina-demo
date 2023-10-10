@@ -301,12 +301,12 @@ export default function Home() {
               Instructional video
             </button>
           </a>
-          <a href={"https://www.craft.me/s/fP61xnwdZ9GZmg"} target="_blank" rel="noreferrer">
+          <a href={"https://github.com/sybil-center/ZKCIPs"} target="_blank" rel="noreferrer">
             <button className={styles.card}>
               What is ZK credentials ?
             </button>
           </a>
-          <a href={"https://github.com/Pave1Pal/zkc-passport-demo"} target="_blank" rel="noreferrer">
+          <a href={"https://github.com/sybil-center/zkc-mina-demo"} target="_blank" rel="noreferrer">
             <button className={styles.card}>
               Source code
             </button>
