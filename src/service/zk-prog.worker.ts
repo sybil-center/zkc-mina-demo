@@ -1,9 +1,13 @@
 import { Experimental, Field, JsonProof, Poseidon, PublicKey, Signature, Struct, UInt64, verify } from "o1js";
-import { o1jsPreparator, PassportCred, Proved, zkcUtil } from "@sybil-center/zkc-o1js";
+import { o1jsSybil, PassportCred, SybilPreparator } from "@sybil-center/zkc-o1js";
 
-type Prepared = [
+type PreparedSign = [
+  Signature,
   Field,
-  PublicKey,
+  PublicKey
+]
+
+type PreparedAttr = [
   Field,
   Field,
   Field,
@@ -15,7 +19,7 @@ type Prepared = [
   Field,
   Field,
   Field
-];
+]
 
 const FROM_1900_TO_1970_MS = -(new Date("1900-01-01T00:00:00.000Z").getTime());
 const YEARS_18_MS = UInt64.from(18 * 365 * 24 * 60 * 60 * 1000);
@@ -67,12 +71,16 @@ const verifyZkProgram = Experimental.ZkProgram({
         verifyInputs.subject.assertEquals(sbj_id_k);
         verifyInputs.today.sub(YEARS_18_MS).assertGreaterThanOrEqual(UInt64.from(sbj_bd));
         const hash = Poseidon.hash([
-          isr_id_t, ...isr_id_k.toFields(),
-          sch, isd, exd,
-          sbj_id_t, ...sbj_id_k.toFields(),
+          sch,
+          isd,
+          exd,
+          sbj_id_t,
+          ...sbj_id_k.toFields(),
           sbj_bd,
-          sbj_cc, sbj_doc_id,
-          sbj_doc_t, sbj_fn, sbj_ln
+          sbj_cc,
+          sbj_doc_id,
+          sbj_doc_t,
+          sbj_fn, sbj_ln
         ]);
         const verified = signature.verify(isr_id_k, [hash]);
         verified.assertTrue();
@@ -102,7 +110,7 @@ export const ZK_PROG_FUNCTIONS = {
   },
 
   auth: async (
-    zkCred: Proved<PassportCred>
+    zkCred: PassportCred
   ): Promise<JsonProof> => {
     if (!state.programCompiled) throw new Error("Compile ZK Program first");
     console.log("Worker: start creating proof");
@@ -114,24 +122,34 @@ export const ZK_PROG_FUNCTIONS = {
         now.getDate()
       ).getTime() + FROM_1900_TO_1970_MS
     );
-    const {
-      cred,
-      proof: {
-        sign: signature,
-        transformSchema
-      }
-    } = zkcUtil.from(zkCred).credAndProof();
-    transformSchema.isr.id.k.pop();
-    transformSchema.sbj.id.k.pop();
-    const prepared = o1jsPreparator.prepare<Prepared>(cred, transformSchema);
+    const preparator = o1jsSybil.getPreparator<SybilPreparator>();
+    const preparedAttr = preparator.getPreparedAttributes<PreparedAttr>(zkCred, {
+      proof: { type: "Mina:PoseidonPasta" },
+      schema: "pre"
+    });
+    console.log("Prepared attributes", preparedAttr);
+    const [
+      sign,
+      isr_id_t,
+      isr_id_k
+    ] = preparator.getPreparedSign<PreparedSign>(zkCred, {
+      proof: { type: "Mina:PoseidonPasta" },
+      schema: "pre"
+    });
+    console.log("sign", sign.toBase58());
+    console.log("isr_id_t", isr_id_t.toBigInt());
+    console.log("isr_id_k", isr_id_k.toBase58());
+    console.log("Start zkc authentication");
     const proof = await verifyZkProgram.auth(
       new VerifyInputs({
-        subject: prepared[6], // sbj.id.k as PublicKey
+        subject: preparedAttr[4],
         today: today,
-        issuer: prepared[1] // isr.id.k as PublicKey
+        issuer: isr_id_k
       }),
-      Signature.fromBase58(signature),
-      ...prepared
+      sign,
+      isr_id_t,
+      isr_id_k,
+      ...preparedAttr
     );
     console.log(`Worker: proof created`);
     console.log("Worker: proof", proof.toJSON());

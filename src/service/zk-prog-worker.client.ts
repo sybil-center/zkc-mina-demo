@@ -1,6 +1,6 @@
 import { WorkerFns, ZK_PROG_FUNCTIONS, ZkProgWorkerReq, ZkProgWorkerResp, } from "@/service/zk-prog.worker";
 
-import { PassportCred, Proved } from "@sybil-center/zkc-o1js";
+import { PassportCred } from "@sybil-center/zkc-o1js";
 import { JsonProof } from "o1js";
 
 type IZkProgWorkerClient = typeof ZK_PROG_FUNCTIONS
@@ -13,7 +13,7 @@ export class ZkProgWorkerClient implements IZkProgWorkerClient {
     );
   }
 
-  auth(zkCred: Proved<PassportCred>): Promise<JsonProof> {
+  auth(zkCred: PassportCred): Promise<JsonProof> {
     return this._call("auth", zkCred);
   }
 

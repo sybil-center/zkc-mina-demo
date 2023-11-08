@@ -1,5 +1,5 @@
 import "../service/reactCOIServiceWorker";
-import { IAuroWallet, MinaProvider, PassportCred, Proved, zkcMina, ZkSybil } from "@sybil-center/zkc-o1js";
+import { AuroProvider, type IAuroWallet, o1jsSybil, type PassportCred, ZkSybil } from "@sybil-center/zkc-o1js";
 import { JsonProof, PublicKey } from "o1js";
 import { useEffect, useState } from "react";
 import { ZkProgWorkerClient } from "@/service/zk-prog-worker.client";
@@ -32,13 +32,184 @@ const initZkProgState: ZkProgState = {
 type ZkCredState = {
   loading: boolean;
   error: string;
-  zkCred: Proved<PassportCred> | null;
+  zkCred: PassportCred | null;
 }
 
 const initZkCredState: ZkCredState = {
   loading: false,
   error: "",
-  zkCred: null
+  zkCred: {
+    "attributes": {
+      "exd": 0,
+      "isd": 1699451061384,
+      "sbj": {
+        "bd": 2446934400000,
+        "cc": 840,
+        "doc": {
+          "id": "I1234562",
+          "t": 2
+        },
+        "fn": "ALEXANDER J",
+        "id": {
+          "k": "B62qokENrriEU3XWkob65JcbbcLLMKBvM2HRwx7sPdahjkqjXnXZPaA",
+          "t": 0
+        },
+        "ln": "SAMPLE"
+      },
+      "sch": 0
+    },
+    "proofs": [
+      {
+        "attributeSchemas": {
+          "default": {
+            "exd": [
+              "mina:uint64-field"
+            ],
+            "isd": [
+              "mina:uint64-field"
+            ],
+            "sbj": {
+              "bd": [
+                "mina:uint64-field"
+              ],
+              "cc": [
+                "mina:uint32-field"
+              ],
+              "doc": {
+                "id": [
+                  "utf8-bytes",
+                  "bytes-uint",
+                  "mina:uint-field.order",
+                  "mina:uint-field"
+                ],
+                "t": [
+                  "mina:uint32-field"
+                ]
+              },
+              "fn": [
+                "utf8-bytes",
+                "bytes-uint",
+                "mina:uint-field.order",
+                "mina:uint-field"
+              ],
+              "id": {
+                "k": [
+                  "mina:base58-publickey",
+                  "mina:publickey-fields"
+                ],
+                "t": [
+                  "mina:uint16-field"
+                ]
+              },
+              "ln": [
+                "utf8-bytes",
+                "bytes-uint",
+                "mina:uint-field.order",
+                "mina:uint-field"
+              ]
+            },
+            "sch": [
+              "mina:uint64-field"
+            ]
+          },
+          "pre": {
+            "exd": [
+              "mina:uint64-field"
+            ],
+            "isd": [
+              "mina:uint64-field"
+            ],
+            "sbj": {
+              "bd": [
+                "mina:uint64-field"
+              ],
+              "cc": [
+                "mina:uint32-field"
+              ],
+              "doc": {
+                "id": [
+                  "utf8-bytes",
+                  "bytes-uint",
+                  "mina:uint-field.order",
+                  "mina:uint-field"
+                ],
+                "t": [
+                  "mina:uint32-field"
+                ]
+              },
+              "fn": [
+                "utf8-bytes",
+                "bytes-uint",
+                "mina:uint-field.order",
+                "mina:uint-field"
+              ],
+              "id": {
+                "k": [
+                  "mina:base58-publickey"
+                ],
+                "t": [
+                  "mina:uint16-field"
+                ]
+              },
+              "ln": [
+                "utf8-bytes",
+                "bytes-uint",
+                "mina:uint-field.order",
+                "mina:uint-field"
+              ]
+            },
+            "sch": [
+              "mina:uint64-field"
+            ]
+          }
+        },
+        "signature": {
+          "isr": {
+            "id": {
+              "k": "B62qmNen3kDN74CJ2NQteNABrEN4AurGTbsLrraPy6ipQgUV9Q73tv2",
+              "t": 0
+            }
+          },
+          "sign": "7mXUKn9HxiHtkRihNChzvtApCtmPWmnn4XZD9pHoGWc71L4LPVtkqeGfPvUezQX81Tqrd9WbnWUG4CjXAiase51VyQqTQDWe"
+        },
+        "signatureSchemas": {
+          "default": {
+            "isr": {
+              "id": {
+                "k": [
+                  "mina:base58-publickey",
+                  "mina:publickey-fields"
+                ],
+                "t": [
+                  "mina:uint16-field"
+                ]
+              }
+            },
+            "sign": [
+              "mina:base58-signature",
+              "mina:signature-fields"
+            ]
+          },
+          "pre": {
+            "isr": {
+              "id": {
+                "k": [
+                  "mina:base58-publickey"
+                ],
+                "t": [
+                  "mina:uint16-field"
+                ]
+              }
+            },
+            "sign": [
+              "mina:base58-signature"
+            ]
+          }
+        },
+        "type": "Mina:PoseidonPasta"
+      }
+    ]
+  }
 };
 
 type WalletState = {
@@ -116,13 +287,19 @@ export default function Home() {
         ...prev,
         loading: true
       }));
-      const minaProvider = new MinaProvider(_getWallet());
-      const zkCred = await sybil.credential(
-        "passport",
-        await minaProvider.getProof(),
-        { options: { mina: { network: "mainnet" } } }
-      );
-      const verified = await zkcMina.verifyCred(zkCred);
+      const auroProvider = new AuroProvider(_getWallet());
+      const subjectProof = await auroProvider.getProof();
+      const zkCred = await sybil.credential("passport", subjectProof, {
+        proofTypes: ["Mina:PoseidonPasta"],
+        mina: { network: "Mainnet" }
+      });
+      const verified = await o1jsSybil.verifyCred({
+        cred: zkCred,
+        signSelector: {
+          proof: { type: "Mina:PoseidonPasta" },
+          schema: "pre"
+        }
+      });
       if (!verified) throw new Error(`ZK credential is not verified`);
       setZkCredState((prev) => ({ ...prev, zkCred }));
     } catch (e) {
@@ -136,7 +313,7 @@ export default function Home() {
     }
   }
 
-  function _getZkCred(): Proved<PassportCred> {
+  function _getZkCred(): PassportCred {
     const zkCred = zkCredState.zkCred;
     if (zkCred) return zkCred;
     throw new Error("Get Zk credential first");
@@ -296,7 +473,8 @@ export default function Home() {
             {zkCredComponent()}
           </div>
           {zkProgComponent()}
-          <a href={"https://www.youtube.com/watch?v=xL8-g76TSfI&ab_channel=PavelDeshevov"} target="_blank" rel="noreferrer">
+          <a href={"https://www.youtube.com/watch?v=xL8-g76TSfI&ab_channel=PavelDeshevov"} target="_blank"
+             rel="noreferrer">
             <button className={styles.card}>
               Instructional video
             </button>
